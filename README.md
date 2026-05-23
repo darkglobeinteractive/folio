@@ -52,6 +52,48 @@ The app serves `JPEG/[filename].jpg` as the preview for any TIF file. The direct
 
 ---
 
+## Pre-Launch Tools
+
+Before the app is used, a couple of preparation steps are needed. The tools below are standalone Node.js scripts in `_src/_tools/` — no `npm install` required, as they use only Node.js built-ins.
+
+### Filename Audit
+
+`audit-filenames.js` scans the Media Root and writes a `filename-audit.csv` report directly to the Media Root. The CSV shows how each filename was parsed — what date, description, arrangement, and family member codes were detected — so filenames can be reviewed and corrected before metadata entry begins.
+
+**Run it** from the `_src/` directory:
+```
+npm run filename-audit
+```
+
+Or directly from anywhere, passing the Media Root path explicitly:
+```
+node "_Folio/_src/_tools/audit-filenames.js" "/Volumes/FAM-WORK/Family Archive"
+```
+
+The CSV is written to the Media Root.
+
+**Output columns:** File Path, Filename, Extension, Detected Type, Parsed Date, Parsed Description, Parsed Arrangement, Parsed Codes, Notes.
+
+### Excluding Paths: `_folio-exclude.txt`
+
+A plain text file at the Media Root that lists paths to exclude from both the audit script and the app. Useful for directories kept on the drive for completeness but not relevant to the archive.
+
+- Paths are relative to the Media Root
+- A wildcard suffix (`/*`) excludes a directory and all its contents
+- Lines beginning with `#` are comments
+- The file is optional — if absent, nothing is excluded
+
+**Example:**
+```
+# Wartime photos — on drive for completeness, not for the archive app
+Collections/Alfred Carl Schneider - China Burma Photos/*
+
+# Exclude a single file
+Some Directory/irrelevant-file.tif
+```
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |

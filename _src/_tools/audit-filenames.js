@@ -226,12 +226,8 @@ function rowToCSV(row) {
 // ---------------------------------------------------------------------------
 
 function main() {
-  const mediaRoot = process.argv[2] ? path.resolve(process.argv[2]) : null;
-
-  if (!mediaRoot) {
-    console.error('Usage: node audit-filenames.js <media-root-path>');
-    process.exit(1);
-  }
+  // Default to the Media Root (two levels up from _src/) when run via npm
+  const mediaRoot = path.resolve(process.argv[2] || path.join(__dirname, '..', '..', '..'));
 
   if (!fs.existsSync(mediaRoot)) {
     console.error(`Media root not found: ${mediaRoot}`);

@@ -1,0 +1,11 @@
+{
+  "name": "folio",
+  "version": "0.1.0",
+  "description": "Offline file cataloging and annotation tool for local media archives.",
+  "main": "main/index.js",
+  "scripts": {
+    "audit-filenames": "node _tools/audit-filenames.js"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
