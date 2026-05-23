@@ -15,6 +15,8 @@ ExFAT Drive Root/
 │   └── _src/                            ← all source code (tracked by git)
 │       ├── _documentation/
 │       ├── _sessions/
+│       ├── _tools/                      ← standalone utility scripts (not part of the app)
+│       │   └── audit-filenames.js       ← pre-launch filename audit; writes filename-audit.csv
 │       ├── dist/                        ← gitignored; electron-builder output
 │       ├── node_modules/                ← gitignored; installed npm packages
 │       ├── main/
@@ -26,6 +28,7 @@ ExFAT Drive Root/
 │       ├── scss/
 │       ├── schema.sql                   ← DB schema; used to initialize folio.db on first launch
 │       └── package.json
+├── _folio-exclude.txt                   ← lists paths excluded from the app and audit script
 ├── A Media Directory/
 │   ├── Media Sub-Directory/
 │   │   ├── JPEG/

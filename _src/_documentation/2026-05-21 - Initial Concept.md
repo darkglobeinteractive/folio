@@ -38,9 +38,13 @@ Node.js's built-in `fs` module will recursively walk the drive's directory tree.
 
 **Traversal exclusion rule:** Any root-level entry beginning with `_` or `.` is skipped. This keeps `_Folio/` and `.archive/` out of the directory browser without requiring a hardcoded name list.
 
+For deeper exclusions (e.g. subdirectories kept on the drive for completeness but not relevant to the app), a `_folio-exclude.txt` file at the Media Root lists relative paths to skip. A wildcard suffix (`/*`) excludes a directory and all its contents. The app reads this file at startup; lines beginning with `#` are comments.
+
 ### Filename Parsing
 
-Every file follows a structured naming convention that encodes metadata directly in the filename:
+Filenames follow a structured naming convention where possible, but many files deviate in predictable ways. The parser extracts whatever it can rather than treating non-conforming filenames as failures.
+
+The canonical full format is:
 
 ```
 {date} - {description} - {arrangement}-{CODE}-{CODE}-{CODE}.{ext}
@@ -51,17 +55,33 @@ Every file follows a structured naming convention that encodes metadata directly
 1985-10-15 - Graduation with Family - lr-JAS-MAR-NDA.jpg
 ```
 
+**Detected filename patterns:**
+
+| Pattern | Example |
+|---|---|
+| Full (date + description + codes) | `1985-10-15 - Graduation - lr-JAS-MAR.tif` |
+| Date + description only | `1985-10-15 - Summer Holiday.tif` |
+| Description + codes (no date) | `Graduation - lr-JAS-MAR.tif` |
+| Description only | `Old House.tif` |
+| Numbered/Ordered | `07-02 - Front Cover.tif` |
+
 **Parse logic (split on ` - `, space-dash-space):**
 
-| Part | Example value | Notes |
-|---|---|---|
-| Part 0 | `1985-10-15` | Date. May be `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` only |
-| Part 1 | `Graduation with Family` | Description / title |
-| Part 2 | `lr-JAS-MAR-NDA` | Arrangement indicator + ordered family member codes |
+1. **Part 0** — tested against date and ordering patterns in order:
+   - Matches `YYYY`, `YYYY-MM`, or `YYYY-MM-DD` → extracted as date
+   - Matches 1–3 digits or `XX-XX` (e.g. `01`, `07-02`) → ordering prefix for albums/collections, not a date. Dates are always 4-digit years; shorter numeric prefixes are never dates.
+   - Otherwise → Part 0 is the start of the description
+2. **Last part** — tested as a codes section (see below). If it matches, it is removed from the description.
+3. **Everything remaining** → joined as the description/title.
 
-**Part 2 sub-parse (split on `-`):**
-- First token: arrangement indicator (e.g. `lr` = left to right, `cw` = clockwise, `ccw` = counter-clockwise)
-- Remaining tokens: family member codes in order of appearance
+**Codes section sub-parse (split on `-`):**
+
+- Arrangement indicators are all-lowercase tokens (e.g. `lr`, `cw`, `ccw`, `br`, `fr`)
+- Family member codes start with an uppercase letter, followed by 0–4 characters of any case or digit (e.g. `JAS`, `ESg`, `J1Sa`, `U`)
+- `U` is a valid single-character code meaning "Unidentified"
+- Digits in codes (e.g. `J1Sa`, `J2Sa`) disambiguate relatives who share the same name across generations
+- Multiple arrangement groups are allowed (e.g. `br-AJB-ESg-fr-DMSa` = back row / front row)
+- A codes section with no arrangement indicator is valid when all tokens are codes (e.g. `ACS-RDI` — two people, arrangement not specified)
 
 ### Auto-Detection of Family Members
 On file scan, the app will:

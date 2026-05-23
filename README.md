@@ -8,11 +8,13 @@ The initial use case is a family archive: thousands of media files and documents
 
 ## How It Works
 
-The app lives in a `_Folio/` directory at the root of the drive, alongside the media directories it catalogs. When launched, it walks the drive's folder tree (skipping any root-level entries beginning with `_` or `.`) and surfaces a browsable directory view.
+The app lives in a `_Folio/` directory at the root of the drive, alongside the media directories it catalogs. When launched, it walks the drive's folder tree (skipping any root-level entries beginning with `_` or `.`) and surfaces a browsable directory view. A `_folio-exclude.txt` file at the drive root can list additional paths to exclude — useful for directories kept on the drive for completeness that aren't relevant to the archive.
 
 ### Filename Parsing
 
-Every file follows a structured naming convention:
+Filenames follow a structured naming convention where possible, but the parser extracts whatever it can rather than treating non-conforming files as failures.
+
+The canonical full format is:
 
 ```
 {date} - {description} - {arrangement}-{CODE}-{CODE}-{CODE}.{ext}
@@ -23,11 +25,17 @@ Every file follows a structured naming convention:
 1985-10-15 - Graduation with Family - lr-JAS-MAR-NDA.jpg
 ```
 
-| Part | Example | Notes |
-|---|---|---|
-| Date | `1985-10-15` | `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` |
-| Description | `Graduation with Family` | Becomes the entry title |
-| Arrangement + codes | `lr-JAS-MAR-NDA` | Arrangement indicator + family member codes in order |
+Common variations the parser handles:
+
+| Pattern | Example |
+|---|---|
+| Full (date + description + codes) | `1985-10-15 - Graduation - lr-JAS-MAR.tif` |
+| Date + description only | `1985-10-15 - Summer Holiday.tif` |
+| Description + codes (no date) | `Graduation - lr-JAS-MAR.tif` |
+| Description only | `Old House.tif` |
+| Numbered/Ordered | `07-02 - Front Cover.tif` |
+
+**Code format:** codes start with an uppercase letter followed by 0–4 characters of any case or digit (e.g. `JAS`, `ESg`, `J1Sa`, `U`). Digits disambiguate relatives who share names across generations. `U` means Unidentified. Multiple arrangement groups are supported (e.g. `br-AJB-ESg-fr-DMSa` = back row / front row).
 
 On scan, the app parses each filename, pre-populates the metadata form, and looks up each code against the `family_members` table — tagging matched members automatically. Unrecognized codes surface as warnings so the user knows to add that person first.
 
@@ -66,6 +74,8 @@ ExFAT Drive Root/
 │   ├── _Folio.app              ← gitignored; Mac build
 │   ├── _Folio.exe              ← gitignored; Windows build
 │   └── _src/                   ← all source code (tracked by git)
+│       ├── _tools/             ← standalone utility scripts
+│       │   └── audit-filenames.js
 │       ├── main/               ← Electron main process (Node.js, SQLite, IPC)
 │       │   └── index.js
 │       ├── renderer/           ← React UI
@@ -73,6 +83,7 @@ ExFAT Drive Root/
 │       │   └── App.jsx
 │       ├── schema.sql          ← DB schema; initializes folio.db on first launch
 │       └── package.json
+├── _folio-exclude.txt          ← paths excluded from the app and audit script
 ├── A Media Directory/
 │   ├── Some Sub-Directory/
 │   │   ├── JPEG/               ← JPG preview proxies (excluded from scanner)
