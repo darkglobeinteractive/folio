@@ -29,9 +29,9 @@ const CODE_RE        = /^[A-Z][A-Za-z0-9]{0,4}$/;
 function parseCodesSection(str) {
   const tokens = str.split('-');
 
-  // Single code with no arrangement  (e.g. "JAS")
-  if (tokens.length === 1 && CODE_RE.test(tokens[0])) {
-    return { arrangements: [], codes: [tokens[0]] };
+  // All tokens are codes with no arrangement indicator  (e.g. "JAS" or "JKS-DAS")
+  if (tokens.every(t => CODE_RE.test(t))) {
+    return { arrangements: [], codes: tokens };
   }
 
   // Must start with a lowercase arrangement indicator
@@ -75,6 +75,12 @@ function parseFilename(filename) {
   } else if (ORDER_RE.test(part0)) {
     isNumbered = true;
     remaining.shift();
+    // An ordering prefix can be followed by a date (e.g. "01 - 2006-03-12 - Description - codes")
+    if (remaining.length > 0 && DATE_RE.test(remaining[0])) {
+      hasDate = true;
+      date    = remaining[0];
+      remaining.shift();
+    }
   }
 
   // --- Last part: codes section ---
