@@ -13,8 +13,9 @@ ExFAT Drive Root/
 │   ├── _Folio.app                       ← gitignored; Mac build output
 │   ├── _Folio.exe                       ← gitignored; Windows build output
 │   └── _src/                            ← all source code (tracked by git)
-│       ├── _documentation/
-│       ├── _sessions/
+│       ├── _documentation/              ← maintained information regarding app functionality and build
+│       ├── _prompts/                    ← author generated prompts for AI collaboration
+│       ├── _sessions/                   ← summaries of AI collaboration sessions
 │       ├── _tools/                      ← standalone utility scripts (not part of the app)
 │       │   └── audit-filenames.js       ← pre-launch filename audit; writes filename-audit.csv
 │       ├── dist/                        ← gitignored; electron-builder output
