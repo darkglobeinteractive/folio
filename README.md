@@ -2,7 +2,7 @@
 
 Folio is a local file cataloging and annotation tool built with Electron, React, and SQLite. It runs entirely offline — no server, no internet connection, no cloud dependency. Everything lives on the drive alongside the files it indexes.
 
-The initial use case is a family archive: thousands of media files and documents spread across an ExFAT drive, with dates, descriptions, and family member codes already encoded in every filename. Folio reads that naming convention, auto-populates metadata records, and provides a browsable interface for the collection.
+The initial use case is a family archive: thousands of media files and documents spread across an ExFAT drive, with dates, descriptions, and family member codes already encoded in the majority of the filenames. Folio reads that naming convention, auto-populates metadata records, and provides a browsable interface for the collection.
 
 ---
 
