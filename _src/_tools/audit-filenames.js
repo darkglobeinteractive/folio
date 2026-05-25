@@ -10,7 +10,7 @@ const path = require('path');
 
 const EXCLUDED_EXTENSIONS = new Set([
   '.lab', '.htm', '.html', '.txt', '.ttf', '.graffle',
-  '.doc', '.docx', '.xls', '.xlsx', '.csv', '.prproj', '.db',
+  '.doc', '.docx', '.xls', '.xlsx', '.csv', '.prproj', '.db', '.code-workspace'
 ]);
 
 // Date formats: YYYY, YYYY-MM, YYYY-MM-DD
